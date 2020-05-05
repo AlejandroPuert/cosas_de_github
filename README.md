@@ -8,3 +8,6 @@ Esto es escrito en markdown
 ===========================
 
 
+# En colaboración con:
+
+Setroc Zemog Odranoel Epilef
