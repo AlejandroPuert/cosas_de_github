@@ -7,7 +7,7 @@ double * Xprima(double X[2], double t){
     //X = [posicion, velocidad]
     
     double * X_prima = new double[2]; //X_prima = [velocidad, aceleración]
-    double g = -9.8;
+    double g = -4.9;
     X_prima[0] = X[1]; X_prima[1] = g; 
     return X_prima;
 }    
@@ -31,17 +31,17 @@ double * rungekuttaX(double dt, double t, double X [2]){
     k1[0] = Xprima(X,t)[0]*dt;
     k1[1] = Xprima(X,t)[1]*dt;
     
-    X1[0] = X[0]+k1[0]/2;
-    X1[1] = X[1]+k1[1]/2;
+    X1[0] = X[0]+k1[0]/2.0;
+    X1[1] = X[1]+k1[1]/2.0;
     
-    k2[0] = Xprima(X1,t+dt/2)[0]*dt;
-    k2[1] = Xprima(X1,t+dt/2)[1]*dt;
+    k2[0] = Xprima(X1,t+dt/2.0)[0]*dt;
+    k2[1] = Xprima(X1,t+dt/2.0)[1]*dt;
     
-    X2[0] = X[0]+k2[0]/2;
-    X2[1] = X[1]+k2[1]/2;
+    X2[0] = X[0]+k2[0]/2.0;
+    X2[1] = X[1]+k2[1]/2.0;
     
-    k3[0] = Xprima(X2,t+dt/2)[0]*dt;
-    k3[1] = Xprima(X2,t+dt/2)[1]*dt;
+    k3[0] = Xprima(X2,t+dt/2.0)[0]*dt;
+    k3[1] = Xprima(X2,t+dt/2.0)[1]*dt;
     
     X3[0] = X[0]+k3[0];
     X3[1] = X[1]+k3[1];
@@ -50,8 +50,8 @@ double * rungekuttaX(double dt, double t, double X [2]){
     k4[1] = Xprima(X3,t+dt)[1]*dt;
     
     
-    X[0] = X[0] + (k1[0]+2*k2[0]+2*k3[0]+k4[0])/6;
-    X[1] = X[1] + (k1[1]+2*k2[1]+2*k3[1]+k4[1])/6;
+    X[0] = X[0] + (k1[0]+2.0*k2[0]+2.0*k3[0]+k4[0])/6.0;
+    X[1] = X[1] + (k1[1]+2.0*k2[1]+2.0*k3[1]+k4[1])/6.0;
     
     
     return X;

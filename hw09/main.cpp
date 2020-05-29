@@ -6,9 +6,9 @@ using namespace std;
 
 
 int main(){
-    double t=0, dt = 0.01;
+    double t=0, dt = 0.05;
     
-    double X [] = {0,20}; //inicial [posición, velocidad]
+    double X [] = {8.5,20}; //inicial [posición, velocidad]
     std::vector<double> xList;
     std::vector<double> VList;
     std::vector<double> TList;
@@ -19,9 +19,12 @@ int main(){
     
     ofstream myfile;
     myfile.open ("data.txt");
-    
+    cout<<"Tiempo       Posición"<<endl;
     for(int i = 0; X[0]>= 0; i++){
+        cout<<t<<"           "<<xList[i]<<endl;    
+        
         t+=dt;
+        
         double xnew = rungekuttaX(dt,t,X)[0];
         double vnew = rungekuttaX(dt,t,X)[1];
         X[0] = xnew; X[1] = vnew;        
