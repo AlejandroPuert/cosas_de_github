@@ -13,7 +13,19 @@
 #include <fstream>
 #include <ctgmath>
 
+
 using namespace std;
+
+
+
+double aproxi(double var) 
+{ //funcion copiada de https://www.geeksforgeeks.org/rounding-floating-point-number-two-decimal-places-c-c/
+    //no me gusta que hayan tantos puntos decimales en la solucion :) 
+    //a 4 cifras decimales 
+    double value = (int)(var * 10000 + .5); 
+    return (double)value / 10000; 
+} 
+
 
 int main(void){
     fstream outFile;
@@ -22,10 +34,9 @@ int main(void){
     double L=0,l=0;
     double T=10;
     double dx=0,dt=0;
-    // Es conveniente tener las variables 'x' y 't'
-    double x=0,t=0;
     // Definimos los apuntadores para el vector 'U'
     double *U;
+    double *d2; //vec de segundas derivdas
 
     // 1. Cree el archivo difusion.txt
     outFile.open ("difusion.txt", ios::out | ios::trunc);
@@ -44,33 +55,32 @@ int main(void){
     //    como está definido en la línea 17. Nota: Usted puede cambiar el
     //    tiempo si bien lo desea.
     
-    dx = L/(N+1);
-    dt = T/(Nt+1);
+    dx = L/(N);
+    dt = T/(Nt);
 
     // 4. Ya con N, cree el vector U de manera dinámica usando 'new'
     
-    U = new double(N+1);
+    U = new double[N+1];
 
     // 5. Llene el vector U con las condiciones iniciales de U(x,0)
     
+    int k = (int) round((l/dx)); //discretizamos l
     
     for(int i = 0; i<=N; i++){
-        U[i] = 0; //Primero supogamos todos cero
+        if(i==k){
+            U[i] = aproxi(1/dx);
+        }
+        else{
+            U[i] = 0.0000; 
+        }
     }
-    
-    
-    int k = (int) round((l/dx));//discretizamos l
-    
-    U[k-1] = 1/dx;  //Ahora si asignamos (de manera discreta) U(l,0) = U[k-1]
-    //el menos 1 es porque el índice empieza en cero :) 
-    
-    
+       
     
     // 6. Guarde el vector U(x,0) en la primera línea del archivo
     //    difusion.txt utilizando un for loop, la notación conveniente
     //    outFile<<... Recuerden el "endl" sólo al final del arreglo.
     //    la idea es que la primera linea del archivo sea:
-    //    0 0 0 ... 0 0 1/dt 0 0 ... 0 0 0
+    //    0 0 0 ... 0 0 1/dt 0 0 ... 0 0 0 //error! es 1/dx, no 1/dt
     
     for(int i = 0; i<=N; i++){
         outFile <<U[i]<<"   ";
@@ -84,25 +94,44 @@ int main(void){
     //    guardar el vector U(x,t) en una fila del archivo difusion.txt.
     
     
-    double *d2;
-    d2 = new double(N+1); //vec de segundas derivadas discretas
+    d2 = new double[N+1]; //vec de segundas derivadas discretas
+    for(int i = 0; i<N; i++){
+        d2[i] = 0; //inicilizamos en cero
+    }
+    
     
     for(int j=0;j<Nt;j++){
-        for(int i=0;i<=N;i++){ //un for para crear el vector de segunda derivada en cada punto
-            d2[i] = (U[i+1]+U[i-1]-2*U[i])/(pow(dx,2));
-            cout << d2[i] <<endl;
-            cout << pow(dx,2) <<endl;
+        for(int i=0;i<=N-2;i++){ //un for para crear el vector de segunda derivada en cada punto
+            d2[i+1] = aproxi((U[i+2]+U[i]-2*U[i+1])/(dx*dx));
+            //No tocamos ni el primero ni el último porque las paredes son impermeables
         } 
         for(int i=0;i<=N;i++){ //otro for para crear los nuevos valores de U[i]
-            //son dos fors porque crear los U[i] en el anterior dañaría el calculo de d2[i+1] :)
-            U[i] += dt*0.5*d2[i];
+            //son dos fors porque crear los U[i] en el anterior dañaría el calculo de d2 :)
+            U[i] += aproxi(dt*0.5*d2[i]);
             outFile << U[i] <<"   ";
         }
         outFile << endl;
     }
+    
+    
+    //Asumiendo que la última pregunta es cuál es el numero máximo de intervalos....
+    //Para responder esta pregunta grafique algunos de los estados U(x) en diferentes momentos.
+    //Me esta dando decente para N = 18, para N mayor se pone feo. 
+    //Cambiando a T=5 alcanzo a llegar a N = 25 pero no demora en dañarse. 
+    //No se realmente cual es la relación entre estas dos cantidades
+    
+    
+    //Si la pregunta es cuál es le numero mínimo, entonces es N = 2. 
+    //Así obtengo por lo menos el punto donde hay mayor concentración.
+    
+    
+    
+    
+    
 
     // 8. Por último destruya el vector U y cierre el archivo difusion.txt
     delete [] U; U = nullptr;
+    delete [] d2; d2 = nullptr;
     outFile.close();
     return 0;
 }
